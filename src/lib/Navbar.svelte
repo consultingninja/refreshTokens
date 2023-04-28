@@ -7,6 +7,7 @@
 <nav class="nav-base">
     <a href="/">Home</a>
     <a href="/login">Login</a>
+    <a href="/protRoute">Protected Route</a>
     <a data-sveltekit-preload-data="off" href='/logout'>Logout</a>
 
 </nav>

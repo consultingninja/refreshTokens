@@ -3,7 +3,7 @@ import { redirect } from '@sveltejs/kit';
 import type {loginFormResponse} from '../../types/form';
 import { findUserByEmailWithPassword } from "../../backendUtils";
 import { dbConn } from '../../dbConn';
-import { SECRET_INGREDIENT } from '$env/static/private';
+import { SECRET_KEY } from '$env/static/private';
 import bcryptjs from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
@@ -42,10 +42,13 @@ export const actions:Actions = {
             }
             if(authAttempt){
                 const {password,...userAttemptingLoginMinusPassword} = userAttemptingLogin;
-                const authToken = jwt.sign({authedUser:userAttemptingLoginMinusPassword},SECRET_INGREDIENT,{expiresIn:'24h'});
-                cookies.set('authToken',authToken,{httpOnly: true,maxAge:60 * 60 * 24,sameSite: 'strict'})
+                const authToken = jwt.sign({authedUser:userAttemptingLoginMinusPassword},SECRET_KEY,{expiresIn:10});
+                cookies.set('authToken',authToken,{httpOnly: true,maxAge:60 * 60 * 24,sameSite: 'strict'});
+                const refreshToken = jwt.sign({authedUser:userAttemptingLoginMinusPassword},SECRET_KEY,{expiresIn:'120d'});
+                cookies.set('refreshToken',refreshToken,{httpOnly: true,maxAge:60 * 60 * 24 * 120,sameSite: 'strict'});
 
-                throw redirect(302,`/${userAttemptingLogin.URL}/dashboard`)
+
+                throw redirect(302,`/`)
             }
         }
         finally{
